@@ -7,5 +7,6 @@ To compile this `libretro` core use `cmake`. Your C++ compiler must support the 
 $ mkdir build
 $ cd build
 $ cmake ..
+$ make -j $(nproc)
 $ retroarch -v -L ./libaioNES_libretro.so
 ```
