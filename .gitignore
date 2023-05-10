@@ -1,3 +1,7 @@
+# NES rom files
+*.nes
+roms/
+
 # Object files
 *.o
 *.ko
