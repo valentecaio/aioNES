@@ -53,7 +53,7 @@ void retro_get_system_info(struct retro_system_info *info)
    info->library_name     = "aioNES";
    info->library_version  = "0.1.0";
    info->need_fullpath    = true;
-   info->valid_extensions = "elf|dol|gcm|iso|wbfs|ciso|gcz|wad";
+   info->valid_extensions = "nes";
 }
 
 static retro_video_refresh_t video_cb;
