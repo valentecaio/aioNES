@@ -1,12 +1,10 @@
 #include <stdio.h>
-#include <stdint.h>
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
-#define __USE_XOPEN // for M_PI
-#include <math.h>
 
 #include "libretro.h"
+#include "../cartridge.h"
 
 #define VIDEO_WIDTH 256
 #define VIDEO_HEIGHT 384
@@ -14,7 +12,7 @@
 
 static uint32_t *frame_buf;
 static struct retro_log_callback logging;
-static retro_log_printf_t log_cb;
+retro_log_printf_t log_cb;
 static retro_environment_t environ_cb;
 
 static void fallback_log(enum retro_log_level level, const char *fmt, ...)
@@ -146,6 +144,7 @@ void retro_run(void)
  */
 bool retro_load_game(const struct retro_game_info *info)
 {
+   cartridge_parse_header(info);
    return true;
 }
 
