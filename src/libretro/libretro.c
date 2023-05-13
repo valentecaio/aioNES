@@ -7,7 +7,7 @@
 #include "../cartridge.h"
 
 #define VIDEO_WIDTH 256
-#define VIDEO_HEIGHT 384
+#define VIDEO_HEIGHT 240
 #define VIDEO_PIXELS VIDEO_WIDTH * VIDEO_HEIGHT
 
 static uint32_t *frame_buf;
@@ -26,7 +26,7 @@ static void fallback_log(enum retro_log_level level, const char *fmt, ...)
 
 void retro_init(void)
 {
-   frame_buf = calloc(320 * 240, sizeof(uint32_t));
+   frame_buf = calloc(VIDEO_PIXELS, sizeof(uint32_t));
 }
 
 void retro_deinit(void)
@@ -63,7 +63,7 @@ static retro_input_state_t input_state_cb;
 
 void retro_get_system_av_info(struct retro_system_av_info *info)
 {
-   float aspect = 4.0f / 3.0f;
+   float aspect = (float)VIDEO_WIDTH / (float)VIDEO_HEIGHT;
    float sampling_rate = 30000.0f;
 
    info->timing = (struct retro_system_timing) {
@@ -72,10 +72,10 @@ void retro_get_system_av_info(struct retro_system_av_info *info)
    };
 
    info->geometry = (struct retro_game_geometry) {
-      .base_width   = 320,
-      .base_height  = 240,
-      .max_width    = 320,
-      .max_height   = 240,
+      .base_width   = VIDEO_WIDTH,
+      .base_height  = VIDEO_HEIGHT,
+      .max_width    = VIDEO_WIDTH,
+      .max_height   = VIDEO_HEIGHT,
       .aspect_ratio = aspect,
    };
 }
@@ -125,17 +125,12 @@ void retro_reset(void)
 
 /**
  * libretro callback; Called every game tick.
- *
- * Once the core has run, we will attempt to exit, since Dolphin is done.
  */
 void retro_run(void)
 {
    // Clear the display.
-   unsigned stride = 320;
-   video_cb(frame_buf, 320, 240, stride << 2);
-
-   // Shutdown the environment now that Dolphin has loaded and quit.
-   environ_cb(RETRO_ENVIRONMENT_SHUTDOWN, NULL);
+   unsigned stride = VIDEO_WIDTH;
+   video_cb(frame_buf, VIDEO_WIDTH, VIDEO_HEIGHT, stride << 2);
 }
 
 
