@@ -89,7 +89,6 @@ void c6502_ldy_absolute_x(uint16_t addr);
 */
 void c6502_sta_zero_page(uint8_t addr);
 void c6502_sta_zero_page_x(uint8_t addr);
-void c6502_sta_zero_page_y(uint8_t addr);
 void c6502_sta_absolute(uint16_t addr);
 void c6502_sta_absolute_x(uint16_t addr);
 void c6502_sta_absolute_y(uint16_t addr);
