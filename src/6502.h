@@ -19,7 +19,7 @@ $4018–$401F   $0008   APU and I/O functionality that is normally disabled. See
 $4020–$FFFF   $BFE0   Cartridge space: PRG ROM, PRG RAM, and mapper registers
 */
 uint8_t mem[65536] = {0};
-uint8_t reg_a = 0;           // accumulator
+uint8_t reg_a = 0;   // accumulator
 uint8_t reg_x = 0;
 uint8_t reg_y = 0;
 bool flag_n = false; // negative    keeps track if the result in the ALU is negative
@@ -115,5 +115,46 @@ void c6502_stx_absolute(uint16_t addr);
 void c6502_sty_zero_page(uint8_t addr);
 void c6502_sty_zero_page_x(uint8_t addr);
 void c6502_sty_absolute(uint16_t addr);
+
+
+/* Add with Carry (flags: N,V,Z,C)
+    ADC #$aa        $69     2   c6502_adc_immediate
+    ADC $aa         $65     2   c6502_adc_zero_page
+    ADC $aa,X       $75     2   c6502_adc_zero_page_x
+    ADC $aaaa       $6D     3   c6502_adc_absolute
+    ADC $aaaa,X     $7D     3   c6502_adc_absolute_x
+    ADC $aaaa,Y     $79     3   c6502_adc_absolute_y
+    ADC ($aa,X)     $61     2   c6502_adc_indirect_x
+    ADC ($aa),Y     $71     2   c6502_adc_indirect_y
+*/
+void c6502_adc_immediate(uint8_t operand);
+void c6502_adc_zero_page(uint8_t addr);
+void c6502_adc_zero_page_x(uint8_t addr);
+void c6502_adc_absolute(uint16_t addr);
+void c6502_adc_absolute_x(uint16_t addr);
+void c6502_adc_absolute_y(uint16_t addr);
+void c6502_adc_indirect_x(uint8_t addr);
+void c6502_adc_indirect_y(uint8_t addr);
+
+
+/* Subtract with Carry (flags: N,V,Z,C)
+   SBC #$aa        $E9     2   c6502_sbc_immediate
+   SBC $aa         $E5     2   c6502_sbc_zero_page
+   SBC $aa,X       $F5     2   c6502_sbc_zero_page_x
+   SBC $aaaa       $ED     3   c6502_sbc_absolute
+   SBC $aaaa,X     $FD     3   c6502_sbc_absolute_x
+   SBC $aaaa,Y     $F9     3   c6502_sbc_absolute_y
+   SBC ($aa,X)     $E1     2   c6502_sbc_indirect_x
+   SBC ($aa),Y     $F1     2   c6502_sbc_indirect_y
+*/
+void c6502_sbc_immediate(uint8_t operand);
+void c6502_sbc_zero_page(uint8_t addr);
+void c6502_sbc_zero_page_x(uint8_t addr);
+void c6502_sbc_absolute(uint16_t addr);
+void c6502_sbc_absolute_x(uint16_t addr);
+void c6502_sbc_absolute_y(uint16_t addr);
+void c6502_sbc_indirect_x(uint8_t addr);
+void c6502_sbc_indirect_y(uint8_t addr);
+
 
 #endif /* C6502_INSTRUCTIONS_H */
