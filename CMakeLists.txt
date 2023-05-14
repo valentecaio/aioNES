@@ -4,4 +4,4 @@ project(aioNES)
 
 # set (CMAKE_STATIC_LINKER_FLAGS "-g,-O0")
 
-add_library(aioNES_libretro SHARED src/libretro/libretro.c src/cartridge.c)
+add_library(aioNES_libretro SHARED src/libretro/libretro.c src/cartridge.c src/6502.c)
