@@ -116,7 +116,7 @@ void c6502_sty_zero_page_x(uint8_t addr);
 void c6502_sty_absolute(uint16_t addr);
 
 
-/* Add with Carry (flags: N,V,Z,C)
+/*  Add with Carry (flags: N,V,Z,C)
     ADC #$aa        $69     2   c6502_adc_immediate
     ADC $aa         $65     2   c6502_adc_zero_page
     ADC $aa,X       $75     2   c6502_adc_zero_page_x
@@ -136,15 +136,15 @@ void c6502_adc_indirect_x(uint8_t addr);
 void c6502_adc_indirect_y(uint8_t addr);
 
 
-/* Subtract with Carry (flags: N,V,Z,C)
-   SBC #$aa        $E9     2   c6502_sbc_immediate
-   SBC $aa         $E5     2   c6502_sbc_zero_page
-   SBC $aa,X       $F5     2   c6502_sbc_zero_page_x
-   SBC $aaaa       $ED     3   c6502_sbc_absolute
-   SBC $aaaa,X     $FD     3   c6502_sbc_absolute_x
-   SBC $aaaa,Y     $F9     3   c6502_sbc_absolute_y
-   SBC ($aa,X)     $E1     2   c6502_sbc_indirect_x
-   SBC ($aa),Y     $F1     2   c6502_sbc_indirect_y
+/*  Subtract with Carry (flags: N,V,Z,C)
+    SBC #$aa        $E9     2   c6502_sbc_immediate
+    SBC $aa         $E5     2   c6502_sbc_zero_page
+    SBC $aa,X       $F5     2   c6502_sbc_zero_page_x
+    SBC $aaaa       $ED     3   c6502_sbc_absolute
+    SBC $aaaa,X     $FD     3   c6502_sbc_absolute_x
+    SBC $aaaa,Y     $F9     3   c6502_sbc_absolute_y
+    SBC ($aa,X)     $E1     2   c6502_sbc_indirect_x
+    SBC ($aa),Y     $F1     2   c6502_sbc_indirect_y
 */
 void c6502_sbc_immediate(uint8_t operand);
 void c6502_sbc_zero_page(uint8_t addr);
@@ -154,6 +154,30 @@ void c6502_sbc_absolute_x(uint16_t addr);
 void c6502_sbc_absolute_y(uint16_t addr);
 void c6502_sbc_indirect_x(uint8_t addr);
 void c6502_sbc_indirect_y(uint8_t addr);
+
+
+/*  Increment memory (flags: N, Z)
+    INC $aa         $E6     2   c6502_inc_zero_page
+    INC $aa,X       $F6     2   c6502_inc_zero_page_x
+    INC $aaaa       $EE     3   c6502_inc_absolute
+    INC $aaaa,X     $FE     3   c6502_inc_absolute_x
+*/
+void c6502_inc_zero_page(uint8_t addr);
+void c6502_inc_zero_page_x(uint8_t addr);
+void c6502_inc_absolute(uint16_t addr);
+void c6502_inc_absolute_x(uint16_t addr);
+
+
+/*  Increment X register (flags: N, Z)
+    INX             $E8     1   c6502_inx_implied
+*/
+void c6502_inx_implied();
+
+
+/*  Increment X register (flags: N, Z)
+    INY             $C8     1   c6502_iny_implied
+*/
+void c6502_iny_implied();
 
 
 #endif /* C6502_INSTRUCTIONS_H */

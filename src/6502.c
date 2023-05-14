@@ -252,3 +252,33 @@ void c6502_sbc_indirect_y(uint8_t addr) {
     c6502_sbc_immediate(mem[effective_addr]);
 }
 
+
+/************************** INC **************************/
+void c6502_inc_zero_page(uint8_t addr) {
+    set_flags_n_z(++mem[addr]);
+}
+
+void c6502_inc_zero_page_x(uint8_t addr) {
+    set_flags_n_z(++mem[(addr + reg_x) & 0xFF]);
+}
+
+void c6502_inc_absolute(uint16_t addr) {
+    set_flags_n_z(++mem[addr]);
+}
+
+void c6502_inc_absolute_x(uint16_t addr) {
+    set_flags_n_z(++mem[addr + reg_x]);
+}
+
+
+/************************** INX **************************/
+void c6502_inx_implied() {
+    set_flags_n_z(++reg_x);
+}
+
+
+/************************** INY **************************/
+void c6502_iny_implied() {
+    set_flags_n_z(++reg_y);
+}
+
