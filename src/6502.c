@@ -273,3 +273,10 @@ void c6502_iny() { set_flags_n_z(++reg_y); }
 void c6502_dex() { set_flags_n_z(--reg_x); }
 void c6502_dey() { set_flags_n_z(--reg_y); }
 
+
+/******************* TAX, TAY, TXA, TYA ******************/
+void c6502_tax() { set_flags_n_z(reg_x = reg_a); }
+void c6502_tay() { set_flags_n_z(reg_y = reg_a); }
+void c6502_txa() { set_flags_n_z(reg_a = reg_x); }
+void c6502_tya() { set_flags_n_z(reg_a = reg_y); }
+

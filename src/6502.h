@@ -192,4 +192,16 @@ void c6502_dex();
 void c6502_dey();
 
 
+/*  Register Transfer Group (flags: N, Z)
+    TAX             $AA     1   c6502_tax   Transfer accumulator to X
+    TAY             $A8     1   c6502_tay   Transfer accumulator to Y
+    TXA             $8A     1   c6502_txa   Transfer X to accumulator
+    TYA             $98     1   c6502_tya   Transfer Y to accumulator
+*/
+void c6502_tax();
+void c6502_tay();
+void c6502_txa();
+void c6502_tya();
+
+
 #endif /* C6502_INSTRUCTIONS_H */
