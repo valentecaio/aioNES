@@ -41,7 +41,7 @@ void c6502_lda_absolute_y(uint16_t addr) {
     set_flags_n_z(reg_a);
 }
 
-void c6502_lda_indirect_x(uint16_t addr) {
+void c6502_lda_indirect_x(uint8_t addr) {
     uint8_t effective_addr_l = mem[(addr + reg_x) & 0xFF];
     uint8_t effective_addr_h = mem[(addr + reg_x + 1) & 0xFF];
     uint16_t effective_addr = effective_addr_l + (effective_addr_h << 8);
@@ -49,7 +49,7 @@ void c6502_lda_indirect_x(uint16_t addr) {
     set_flags_n_z(reg_a);
 }
 
-void c6502_lda_indirect_y(uint16_t addr) {
+void c6502_lda_indirect_y(uint8_t addr) {
     uint8_t effective_addr_l = mem[addr];
     uint8_t effective_addr_h = mem[(addr + 1) & 0xFF];
     uint16_t effective_addr = (effective_addr_l + (effective_addr_h << 8)) + reg_y;
@@ -140,14 +140,14 @@ void c6502_sta_absolute_y(uint16_t addr) {
     mem[addr + reg_y] = reg_a;
 }
 
-void c6502_sta_indirect_x(uint16_t addr) {
+void c6502_sta_indirect_x(uint8_t addr) {
     uint8_t effective_addr_l = mem[(addr + reg_x) & 0xFF];
     uint8_t effective_addr_h = mem[(addr + reg_x + 1) & 0xFF];
     uint16_t effective_addr = effective_addr_l + (effective_addr_h << 8);
     mem[effective_addr] = reg_a;
 }
 
-void c6502_sta_indirect_y(uint16_t addr) {
+void c6502_sta_indirect_y(uint8_t addr) {
     uint8_t effective_addr_l = mem[addr];
     uint8_t effective_addr_h = mem[(addr + 1) & 0xFF];
     uint16_t effective_addr = (effective_addr_l + (effective_addr_h << 8)) + reg_y;
@@ -183,5 +183,4 @@ void c6502_sty_zero_page_x(uint8_t addr) {
 void c6502_sty_absolute(uint16_t addr) {
     mem[addr] = reg_y;
 }
-
 

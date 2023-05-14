@@ -46,8 +46,8 @@ void c6502_lda_zero_page_x(uint8_t addr);
 void c6502_lda_absolute(uint16_t addr);
 void c6502_lda_absolute_x(uint16_t addr);
 void c6502_lda_absolute_y(uint16_t addr);
-void c6502_lda_indirect_x(uint16_t addr);
-void c6502_lda_indirect_y(uint16_t addr);
+void c6502_lda_indirect_x(uint8_t addr);
+void c6502_lda_indirect_y(uint8_t addr);
 
 
 /*  Load X Register (flags: N,Z)
@@ -93,8 +93,8 @@ void c6502_sta_zero_page_y(uint8_t addr);
 void c6502_sta_absolute(uint16_t addr);
 void c6502_sta_absolute_x(uint16_t addr);
 void c6502_sta_absolute_y(uint16_t addr);
-void c6502_sta_indirect_x(uint16_t addr);
-void c6502_sta_indirect_y(uint16_t addr);
+void c6502_sta_indirect_x(uint8_t addr);
+void c6502_sta_indirect_y(uint8_t addr);
 
 
 /*  Store X Register (flags: none)
@@ -115,6 +115,5 @@ void c6502_stx_absolute(uint16_t addr);
 void c6502_sty_zero_page(uint8_t addr);
 void c6502_sty_zero_page_x(uint8_t addr);
 void c6502_sty_absolute(uint16_t addr);
-
 
 #endif /* C6502_INSTRUCTIONS_H */
