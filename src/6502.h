@@ -180,4 +180,27 @@ void c6502_inx_implied();
 void c6502_iny_implied();
 
 
+/*  Decrement memory (flags: N, Z)
+    DEC $aa         $C6     2   c6502_dec_zero_page
+    DEC $aa,X       $D6     2   c6502_dec_zero_page_x
+    DEC $aaaa       $CE     3   c6502_dec_absolute
+    DEC $aaaa,X     $DE     3   c6502_dec_absolute_x
+*/
+void c6502_dec_zero_page(uint8_t addr);
+void c6502_dec_zero_page_x(uint8_t addr);
+void c6502_dec_absolute(uint16_t addr);
+void c6502_dec_absolute_x(uint16_t addr);
+
+
+/*  Decrement X register (flags: N, Z)
+    DEX             $CA     1   c6502_dex_implied
+*/
+void c6502_dex_implied();
+
+
+/*  Decrement Y register (flags: N, Z)
+    DEY             $88     1   c6502_dey_implied
+*/
+void c6502_dey_implied();
+
 #endif /* C6502_INSTRUCTIONS_H */
