@@ -1,7 +1,6 @@
 #ifndef RP2A03_INSTRUCTIONS_H
 #define RP2A03_INSTRUCTIONS_H
 
-#include <stdbool.h>
 #include <stdint.h>
 
 #include "libretro/libretro.h"
@@ -29,10 +28,26 @@ uint8_t mem[65536] = {0};
 uint8_t reg_a = 0;   // accumulator
 uint8_t reg_x = 0;
 uint8_t reg_y = 0;
-bool flag_n = false; // negative    keeps track if the result in the ALU is negative
-bool flag_z = false; // zero        keeps track if the result of a calculation is zero
-bool flag_v = false; // overflow
-bool flag_c = false; // carry
+
+/*  7  bit  0
+    ---- ----
+    NVss DIZC
+    |||| ||||
+    |||| |||+- Carry
+    |||| ||+-- Zero                 keeps track if the result of a calculation is zero
+    |||| |+--- Interrupt Disable
+    |||| +---- Decimal              ignored in this implementation
+    ||++------ No CPU effect        ignored in this implementation
+    |+-------- Overflow
+    +--------- Negative             keeps track if the result in the ALU is negative
+*/
+uint8_t flags = 0;
+#define RP2A03_FLAG_CARRY      0x01
+#define RP2A03_FLAG_ZERO       0x02
+#define RP2A03_FLAG_INTERRUPT  0x04
+#define RP2A03_FLAG_OVERFLOW   0x40
+#define RP2A03_FLAG_NEGATIVE   0x80
+
 
 
 /*********************** AUXILIARY FUNCTIONS ***********************/

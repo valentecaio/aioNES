@@ -1,11 +1,18 @@
-#include <stdbool.h>
 #include <stdint.h>
 
 #include "RP2A03.h"
 
 void set_flags_n_z(uint8_t result) {
-    flag_n = (result & 0x80) != 0;
-    flag_z = (result == 0);
+    // clear Z and N bits
+    flags &= ~(RP2A03_FLAG_NEGATIVE | RP2A03_FLAG_ZERO);
+
+    // set them accordingly
+    if (result == 0) {
+        flags |= RP2A03_FLAG_ZERO;
+    }
+    if (result & 0x80) {
+        flags |= RP2A03_FLAG_NEGATIVE;
+    }
 }
 
 uint16_t indirect_x(uint8_t addr) {
@@ -84,10 +91,18 @@ void rp2A03_sty_absolute(uint16_t addr)   { mem[addr] = reg_y; }
 
 /************************** ADC **************************/
 void rp2A03_adc_immediate(uint8_t operand) {
-    uint16_t result = reg_a + operand + (flag_c ? 1 : 0);
-    flag_v = ((reg_a ^ result) & (operand ^ result) & 0x80) != 0;
-    flag_c = result > 0xFF;
-    reg_a = result & 0xFF;
+    uint16_t sum = reg_a + operand + (flags & RP2A03_FLAG_CARRY);
+
+     // clear C and V flags and reset them if needed
+    flags &= ~(RP2A03_FLAG_CARRY | RP2A03_FLAG_OVERFLOW);
+    if ((~(reg_a ^ operand) & (reg_a ^ sum)) & 0x80) {
+        flags |= RP2A03_FLAG_OVERFLOW;
+    }
+    if (sum > 0xFF) {
+        flags |= RP2A03_FLAG_CARRY;
+    }
+
+    reg_a = sum & 0xFF;
     set_flags_n_z(reg_a);
 }
 void rp2A03_adc_zero_page(uint8_t addr)   { rp2A03_adc_immediate(mem[addr]); }
@@ -101,11 +116,19 @@ void rp2A03_adc_indirect_y(uint8_t addr)  { rp2A03_adc_immediate(mem[indirect_y(
 
 /************************** SBC **************************/
 void rp2A03_sbc_immediate(uint8_t operand) {
-    uint16_t result = reg_a - operand - (flag_c ? 0 : 1);
-    reg_a = (uint8_t)result;
+    uint16_t diff = reg_a - operand - (1 - (flags & RP2A03_FLAG_CARRY));
+
+    // clear C and V flags and reset them if needed
+    flags &= ~(RP2A03_FLAG_CARRY | RP2A03_FLAG_OVERFLOW);
+    if (((reg_a ^ diff) & 0x80) && ((reg_a ^ operand) & 0x80)) {
+        flags |= RP2A03_FLAG_OVERFLOW;
+    }
+    if (diff < 0x100) {
+        flags |= RP2A03_FLAG_CARRY;
+    }
+
+    reg_a = diff & 0xFF;
     set_flags_n_z(reg_a);
-    flag_c = (result < 0x100);
-    flag_v = ((reg_a ^ result) & (operand ^ result) & 0x80) != 0;
 }
 void rp2A03_sbc_zero_page(uint8_t addr)   { rp2A03_sbc_immediate(mem[addr]); }
 void rp2A03_sbc_zero_page_x(uint8_t addr) { rp2A03_sbc_immediate(mem[zero_page_x(addr)]); }
