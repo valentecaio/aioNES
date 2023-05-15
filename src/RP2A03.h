@@ -1,6 +1,7 @@
 #ifndef RP2A03_INSTRUCTIONS_H
 #define RP2A03_INSTRUCTIONS_H
 
+#include <stdbool.h>
 #include <stdint.h>
 
 #include "libretro/libretro.h"
@@ -42,16 +43,22 @@ uint8_t reg_y = 0;
     +--------- Negative             keeps track if the result in the ALU is negative
 */
 uint8_t flags = 0;
-#define RP2A03_FLAG_CARRY      0x01
-#define RP2A03_FLAG_ZERO       0x02
-#define RP2A03_FLAG_INTERRUPT  0x04
-#define RP2A03_FLAG_OVERFLOW   0x40
-#define RP2A03_FLAG_NEGATIVE   0x80
-
+typedef enum RP2A03Flags {
+    RP2A03_FLAG_CARRY     = 0b00000001, // C flag bitmask
+    RP2A03_FLAG_ZERO      = 0b00000010, // Z flag bitmask
+    RP2A03_FLAG_INTERRUPT = 0b00000100, // I flag bitmask
+    RP2A03_FLAG_OVERFLOW  = 0b01000000, // V flag bitmask
+    RP2A03_FLAG_NEGATIVE  = 0b10000000  // N flag bitmask
+} RP2A03Flags;
 
 
 /*********************** AUXILIARY FUNCTIONS ***********************/
+void set_flag(RP2A03Flags flag, bool value);
 void set_flags(uint8_t result);
+uint8_t zero_page_x(uint8_t addr);
+uint8_t zero_page_y(uint8_t addr);
+uint16_t indirect_x(uint8_t addr);
+uint16_t indirect_y(uint8_t addr);
 
 
 /******************************* LDA *******************************

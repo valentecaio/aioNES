@@ -1,30 +1,18 @@
+#include <stdbool.h>
 #include <stdint.h>
 
 #include "RP2A03.h"
 
+void set_flag(RP2A03Flags flag, bool value) {
+    flags &= ~flag;
+    if (value) {
+        flags |= flag;
+    }
+}
+
 void set_flags_n_z(uint8_t result) {
-    // clear Z and N bits
-    flags &= ~(RP2A03_FLAG_NEGATIVE | RP2A03_FLAG_ZERO);
-
-    // set them accordingly
-    if (result == 0) {
-        flags |= RP2A03_FLAG_ZERO;
-    }
-    if (result & 0x80) {
-        flags |= RP2A03_FLAG_NEGATIVE;
-    }
-}
-
-uint16_t indirect_x(uint8_t addr) {
-    uint8_t effective_addr_l = mem[(addr + reg_x) & 0xFF];
-    uint8_t effective_addr_h = mem[(addr + reg_x + 1) & 0xFF];
-    return effective_addr_h << 8 | effective_addr_l;
-}
-
-uint16_t indirect_y(uint8_t addr) {
-    uint8_t effective_addr_l = mem[addr];
-    uint8_t effective_addr_h = mem[(addr + 1) & 0xFF];
-    return (effective_addr_h << 8 | effective_addr_l) + reg_y;
+    set_flag(RP2A03_FLAG_ZERO, result == 0);
+    set_flag(RP2A03_FLAG_NEGATIVE, result & 0x80);
 }
 
 /*
@@ -38,6 +26,18 @@ uint8_t zero_page_x(uint8_t addr) {
 
 uint8_t zero_page_y(uint8_t addr) {
     return (addr + reg_y) & 0xFF;
+}
+
+uint16_t indirect_x(uint8_t addr) {
+    uint8_t effective_addr_l = mem[(addr + reg_x) & 0xFF];
+    uint8_t effective_addr_h = mem[(addr + reg_x + 1) & 0xFF];
+    return effective_addr_h << 8 | effective_addr_l;
+}
+
+uint16_t indirect_y(uint8_t addr) {
+    uint8_t effective_addr_l = mem[addr];
+    uint8_t effective_addr_h = mem[(addr + 1) & 0xFF];
+    return (effective_addr_h << 8 | effective_addr_l) + reg_y;
 }
 
 /************************** LDA **************************/
@@ -92,16 +92,8 @@ void rp2A03_sty_absolute(uint16_t addr)   { mem[addr] = reg_y; }
 /************************** ADC **************************/
 void rp2A03_adc_immediate(uint8_t operand) {
     uint16_t sum = reg_a + operand + (flags & RP2A03_FLAG_CARRY);
-
-     // clear C and V flags and reset them if needed
-    flags &= ~(RP2A03_FLAG_CARRY | RP2A03_FLAG_OVERFLOW);
-    if ((~(reg_a ^ operand) & (reg_a ^ sum)) & 0x80) {
-        flags |= RP2A03_FLAG_OVERFLOW;
-    }
-    if (sum > 0xFF) {
-        flags |= RP2A03_FLAG_CARRY;
-    }
-
+    set_flag(RP2A03_FLAG_CARRY, sum > 0xFF);
+    set_flag(RP2A03_FLAG_OVERFLOW, (~(reg_a ^ operand) & (reg_a ^ sum)) & 0x80);
     reg_a = sum & 0xFF;
     set_flags_n_z(reg_a);
 }
@@ -117,16 +109,8 @@ void rp2A03_adc_indirect_y(uint8_t addr)  { rp2A03_adc_immediate(mem[indirect_y(
 /************************** SBC **************************/
 void rp2A03_sbc_immediate(uint8_t operand) {
     uint16_t diff = reg_a - operand - (1 - (flags & RP2A03_FLAG_CARRY));
-
-    // clear C and V flags and reset them if needed
-    flags &= ~(RP2A03_FLAG_CARRY | RP2A03_FLAG_OVERFLOW);
-    if (((reg_a ^ diff) & 0x80) && ((reg_a ^ operand) & 0x80)) {
-        flags |= RP2A03_FLAG_OVERFLOW;
-    }
-    if (diff < 0x100) {
-        flags |= RP2A03_FLAG_CARRY;
-    }
-
+    set_flag(RP2A03_FLAG_CARRY, diff < 0x100);
+    set_flag(RP2A03_FLAG_OVERFLOW, ((reg_a ^ diff) & 0x80) && ((reg_a ^ operand) & 0x80));
     reg_a = diff & 0xFF;
     set_flags_n_z(reg_a);
 }
