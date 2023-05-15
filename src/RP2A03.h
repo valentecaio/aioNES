@@ -23,6 +23,16 @@
     $4020–$FFFF   $BFE0   Cartridge space: PRG ROM, PRG RAM, and mapper registers
 */
 
+/**************************** CONSTANTS ****************************/
+#define BIT_0 0b00000001
+#define BIT_1 0b00000010
+#define BIT_2 0b00000100
+#define BIT_3 0b00001000
+#define BIT_4 0b00010000
+#define BIT_5 0b00100000
+#define BIT_6 0b01000000
+#define BIT_7 0b10000000
+
 
 /**************************** CPU STATE ****************************/
 uint8_t mem[65536] = {0};
@@ -323,8 +333,8 @@ void rp2A03_ora_indirect_y(uint8_t addr);
 
     Flags:
     Z: set if the accumulator is equal to the compared value;
-    C: set if the accumulator is greater than or equal to the compared value;
     N: set to the value of bit 7 of the result of (accumulator - operand);
+    C: set if the accumulator is greater than or equal to the compared value;
 */
 void rp2A03_cmp_immediate(uint8_t operand);
 void rp2A03_cmp_zero_page(uint8_t addr);
@@ -365,11 +375,80 @@ void rp2A03_cpy_absolute(uint16_t addr);
 
     Flags:
     Z: set if the result of the AND operation is zero (no matching bits);
-    V: set to the value of bit 6 of the memory value;
     N: set to the value of bit 7 of the memory value;
+    V: set to the value of bit 6 of the memory value;
 */
 void rp2A03_bit_zero_page(uint8_t addr);
 void rp2A03_bit_absolute(uint16_t addr);
+
+
+/******************************* ASL *******************************
+    Arithmetic Shift Left (flags: N, Z, C)
+    ASL A           $0A     1   rp2A03_asl_accumulator
+    ASL $aa         $06     2   rp2A03_asl_zero_page
+    ASL $aa,X       $16     2   rp2A03_asl_zero_page_x
+    ASL $aaaa       $0E     3   rp2A03_asl_absolute
+    ASL $aaaa,X     $1E     3   rp2A03_asl_absolute_x
+
+    The C flag carries the old bit 7:       C <- [76543210] <- 0
+*/
+void rp2A03_asl_accumulator();
+void rp2A03_asl_zero_page(uint8_t addr);
+void rp2A03_asl_zero_page_x(uint8_t addr);
+void rp2A03_asl_absolute(uint16_t addr);
+void rp2A03_asl_absolute_x(uint16_t addr);
+
+
+/******************************* LSR *******************************
+    Logical Shift Right (flags: N, Z, C)
+    LSR A           $4A     1   rp2A03_lsr_accumulator
+    LSR $aa         $46     2   rp2A03_lsr_zero_page
+    LSR $aa,X       $56     2   rp2A03_lsr_zero_page_x
+    LSR $aaaa       $4E     3   rp2A03_lsr_absolute
+    LSR $aaaa,X     $5E     3   rp2A03_lsr_absolute_x
+
+    The C flag carries the old bit 0:       0 -> [76543210] -> C
+*/
+void rp2A03_lsr_accumulator();
+void rp2A03_lsr_zero_page(uint8_t addr);
+void rp2A03_lsr_zero_page_x(uint8_t addr);
+void rp2A03_lsr_absolute(uint16_t addr);
+void rp2A03_lsr_absolute_x(uint16_t addr);
+
+
+/******************************* ROL *******************************
+    Rotate Left (flags: N, Z, C)
+    ROL A           $2A     1   rp2A03_rol_accumulator
+    ROL $aa         $26     2   rp2A03_rol_zero_page
+    ROL $aa,X       $36     2   rp2A03_rol_zero_page_x
+    ROL $aaaa       $2E     3   rp2A03_rol_absolute
+    ROL $aaaa,X     $3E     3   rp2A03_rol_absolute_x
+
+    The C flag carries the old bit 7:       C <- [76543210] <- C
+*/
+void rp2A03_rol_accumulator();
+void rp2A03_rol_zero_page(uint8_t addr);
+void rp2A03_rol_zero_page_x(uint8_t addr);
+void rp2A03_rol_absolute(uint16_t addr);
+void rp2A03_rol_absolute_x(uint16_t addr);
+
+
+/******************************* ROR *******************************
+    Rotate Right (flags: N, Z, C)
+    ROR A           $6A     1   rp2A03_ror_accumulator
+    ROR $aa         $66     2   rp2A03_ror_zero_page
+    ROR $aa,X       $76     2   rp2A03_ror_zero_page_x
+    ROR $aaaa       $6E     3   rp2A03_ror_absolute
+    ROR $aaaa,X     $7E     3   rp2A03_ror_absolute_x
+
+    The C flag carries the old bit 0:       C -> [76543210] -> C
+*/
+void rp2A03_ror_accumulator();
+void rp2A03_ror_zero_page(uint8_t addr);
+void rp2A03_ror_zero_page_x(uint8_t addr);
+void rp2A03_ror_absolute(uint16_t addr);
+void rp2A03_ror_absolute_x(uint16_t addr);
+
 
 
 #endif /* RP2A03_INSTRUCTIONS_H */
