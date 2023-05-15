@@ -143,3 +143,36 @@ void rp2A03_tay() { set_flags_n_z(reg_y = reg_a); }
 void rp2A03_txa() { set_flags_n_z(reg_a = reg_x); }
 void rp2A03_tya() { set_flags_n_z(reg_a = reg_y); }
 
+
+/************************** AND **************************/
+void rp2A03_and_immediate(uint8_t operand) { set_flags_n_z(reg_a &= operand); }
+void rp2A03_and_zero_page(uint8_t addr)   { rp2A03_and_immediate(mem[addr]); }
+void rp2A03_and_zero_page_x(uint8_t addr) { rp2A03_and_immediate(mem[zero_page_x(addr)]); }
+void rp2A03_and_absolute(uint16_t addr)   { rp2A03_and_immediate(mem[addr]); }
+void rp2A03_and_absolute_x(uint16_t addr) { rp2A03_and_immediate(mem[addr + reg_x]); }
+void rp2A03_and_absolute_y(uint16_t addr) { rp2A03_and_immediate(mem[addr + reg_y]); }
+void rp2A03_and_indirect_x(uint8_t addr)  { rp2A03_and_immediate(mem[indirect_x(addr)]); }
+void rp2A03_and_indirect_y(uint8_t addr)  { rp2A03_and_immediate(mem[indirect_y(addr)]); }
+
+
+/************************** EOR **************************/
+void rp2A03_eor_immediate(uint8_t operand) { set_flags_n_z(reg_a ^= operand); }
+void rp2A03_eor_zero_page(uint8_t addr)   { rp2A03_eor_immediate(mem[addr]); }
+void rp2A03_eor_zero_page_x(uint8_t addr) { rp2A03_eor_immediate(mem[zero_page_x(addr)]); }
+void rp2A03_eor_absolute(uint16_t addr)   { rp2A03_eor_immediate(mem[addr]); }
+void rp2A03_eor_absolute_x(uint16_t addr) { rp2A03_eor_immediate(mem[addr + reg_x]); }
+void rp2A03_eor_absolute_y(uint16_t addr) { rp2A03_eor_immediate(mem[addr + reg_y]); }
+void rp2A03_eor_indirect_x(uint8_t addr)  { rp2A03_eor_immediate(mem[indirect_x(addr)]); }
+void rp2A03_eor_indirect_y(uint8_t addr)  { rp2A03_eor_immediate(mem[indirect_y(addr)]); }
+
+
+/************************** ORA **************************/
+void rp2A03_ora_immediate(uint8_t operand) { set_flags_n_z(reg_a |= operand); }
+void rp2A03_ora_zero_page(uint8_t addr)   { rp2A03_ora_immediate(mem[addr]); }
+void rp2A03_ora_zero_page_x(uint8_t addr) { rp2A03_ora_immediate(mem[zero_page_x(addr)]); }
+void rp2A03_ora_absolute(uint16_t addr)   { rp2A03_ora_immediate(mem[addr]); }
+void rp2A03_ora_absolute_x(uint16_t addr) { rp2A03_ora_immediate(mem[addr + reg_x]); }
+void rp2A03_ora_absolute_y(uint16_t addr) { rp2A03_ora_immediate(mem[addr + reg_y]); }
+void rp2A03_ora_indirect_x(uint8_t addr)  { rp2A03_ora_immediate(mem[indirect_x(addr)]); }
+void rp2A03_ora_indirect_y(uint8_t addr)  { rp2A03_ora_immediate(mem[indirect_y(addr)]); }
+

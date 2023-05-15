@@ -225,4 +225,67 @@ void rp2A03_txa();
 void rp2A03_tya();
 
 
+/******************************* AND *******************************
+    Logical AND (flags: N, Z)
+    AND #$aa        $29     2   rp2A03_and_immediate
+    AND $aa         $25     2   rp2A03_and_zero_page
+    AND $aa,X       $35     2   rp2A03_and_zero_page_x
+    AND $aaaa       $2D     3   rp2A03_and_absolute
+    AND $aaaa,X     $3D     3   rp2A03_and_absolute_x
+    AND $aaaa,Y     $39     3   rp2A03_and_absolute_y
+    AND ($aa,X)     $21     2   rp2A03_and_indirect_x
+    AND ($aa),Y     $31     2   rp2A03_and_indirect_y
+*/
+void rp2A03_and_immediate(uint8_t operand);
+void rp2A03_and_zero_page(uint8_t addr);
+void rp2A03_and_zero_page_x(uint8_t addr);
+void rp2A03_and_absolute(uint16_t addr);
+void rp2A03_and_absolute_x(uint16_t addr);
+void rp2A03_and_absolute_y(uint16_t addr);
+void rp2A03_and_indirect_x(uint8_t addr);
+void rp2A03_and_indirect_y(uint8_t addr);
+
+
+/******************************* XOR *******************************
+    Logical Exclusive OR (flags: N, Z)
+    EOR #$aa        $49     2   rp2A03_eor_immediate
+    EOR $aa         $45     2   rp2A03_eor_zero_page
+    EOR $aa,X       $55     2   rp2A03_eor_zero_page_x
+    EOR $aaaa       $4D     3   rp2A03_eor_absolute
+    EOR $aaaa,X     $5D     3   rp2A03_eor_absolute_x
+    EOR $aaaa,Y     $59     3   rp2A03_eor_absolute_y
+    EOR ($aa,X)     $41     2   rp2A03_eor_indirect_x
+    EOR ($aa),Y     $51     2   rp2A03_eor_indirect_y
+*/
+void rp2A03_eor_immediate(uint8_t operand);
+void rp2A03_eor_zero_page(uint8_t addr);
+void rp2A03_eor_zero_page_x(uint8_t addr);
+void rp2A03_eor_absolute(uint16_t addr);
+void rp2A03_eor_absolute_x(uint16_t addr);
+void rp2A03_eor_absolute_y(uint16_t addr);
+void rp2A03_eor_indirect_x(uint8_t addr);
+void rp2A03_eor_indirect_y(uint8_t addr);
+
+
+/******************************* ORA *******************************
+    Logical Inclusive OR (flags: N, Z)
+    ORA #$aa        $09     2   rp2A03_ora_immediate
+    ORA $aa         $05     2   rp2A03_ora_zero_page
+    ORA $aa,X       $15     2   rp2A03_ora_zero_page_x
+    ORA $aaaa       $0D     3   rp2A03_ora_absolute
+    ORA $aaaa,X     $1D     3   rp2A03_ora_absolute_x
+    ORA $aaaa,Y     $19     3   rp2A03_ora_absolute_y
+    ORA ($aa,X)     $01     2   rp2A03_ora_indirect_x
+    ORA ($aa),Y     $11     2   rp2A03_ora_indirect_y
+*/
+void rp2A03_ora_immediate(uint8_t operand);
+void rp2A03_ora_zero_page(uint8_t addr);
+void rp2A03_ora_zero_page_x(uint8_t addr);
+void rp2A03_ora_absolute(uint16_t addr);
+void rp2A03_ora_absolute_x(uint16_t addr);
+void rp2A03_ora_absolute_y(uint16_t addr);
+void rp2A03_ora_indirect_x(uint8_t addr);
+void rp2A03_ora_indirect_y(uint8_t addr);
+
+
 #endif /* RP2A03_INSTRUCTIONS_H */
