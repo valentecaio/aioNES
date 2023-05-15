@@ -183,3 +183,45 @@ void rp2A03_ora_absolute_y(uint16_t addr) { rp2A03_ora_immediate(mem[addr + reg_
 void rp2A03_ora_indirect_x(uint8_t addr)  { rp2A03_ora_immediate(mem[indirect_x(addr)]); }
 void rp2A03_ora_indirect_y(uint8_t addr)  { rp2A03_ora_immediate(mem[indirect_y(addr)]); }
 
+
+/************************** CMP **************************/
+void rp2A03_cmp_immediate(uint8_t operand) {
+    set_flags_n_z(reg_a - operand);
+    set_flag(RP2A03_FLAG_CARRY, reg_a >= operand);
+}
+void rp2A03_cmp_zero_page(uint8_t addr)   { rp2A03_cmp_immediate(mem[addr]); }
+void rp2A03_cmp_zero_page_x(uint8_t addr) { rp2A03_cmp_immediate(mem[zero_page_x(addr)]); }
+void rp2A03_cmp_absolute(uint16_t addr)   { rp2A03_cmp_immediate(mem[addr]); }
+void rp2A03_cmp_absolute_x(uint16_t addr) { rp2A03_cmp_immediate(mem[addr + reg_x]); }
+void rp2A03_cmp_absolute_y(uint16_t addr) { rp2A03_cmp_immediate(mem[addr + reg_y]); }
+void rp2A03_cmp_indirect_x(uint8_t addr)  { rp2A03_cmp_immediate(mem[indirect_x(addr)]); }
+void rp2A03_cmp_indirect_y(uint8_t addr)  { rp2A03_cmp_immediate(mem[indirect_y(addr)]); }
+
+
+/******************************* CPX *******************************/
+void rp2A03_cpx_immediate(uint8_t operand) {
+    set_flags_n_z(reg_x - operand);
+    set_flag(RP2A03_FLAG_CARRY, reg_x >= operand);
+}
+void rp2A03_cpx_zero_page(uint8_t addr) { rp2A03_cpx_immediate(mem[addr]); }
+void rp2A03_cpx_absolute(uint16_t addr) { rp2A03_cpx_immediate(mem[addr]); }
+
+
+/******************************* CPY *******************************/
+void rp2A03_cpy_immediate(uint8_t operand) {
+    set_flags_n_z(reg_y - operand);
+    set_flag(RP2A03_FLAG_CARRY, reg_y >= operand);
+}
+void rp2A03_cpy_zero_page(uint8_t addr) { rp2A03_cpy_immediate(mem[addr]); }
+void rp2A03_cpy_absolute(uint16_t addr) { rp2A03_cpy_immediate(mem[addr]); }
+
+
+/******************************* BIT *******************************/
+void rp2A03_bit_absolute(uint16_t addr) {
+    set_flag(RP2A03_FLAG_ZERO, (reg_a & mem[addr]) == 0);
+    set_flag(RP2A03_FLAG_OVERFLOW, mem[addr] & RP2A03_FLAG_OVERFLOW);
+    set_flag(RP2A03_FLAG_NEGATIVE, mem[addr] & RP2A03_FLAG_NEGATIVE);
+}
+void rp2A03_bit_zero_page(uint8_t addr) { rp2A03_bit_absolute((uint16_t)addr); }
+
+

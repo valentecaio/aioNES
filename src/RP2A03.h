@@ -310,4 +310,66 @@ void rp2A03_ora_indirect_x(uint8_t addr);
 void rp2A03_ora_indirect_y(uint8_t addr);
 
 
+/******************************* CMP *******************************
+    Compare
+    CMP #$aa        $C9     2   rp2A03_cmp_immediate
+    CMP $aa         $C5     2   rp2A03_cmp_zero_page
+    CMP $aa,X       $D5     2   rp2A03_cmp_zero_page_x
+    CMP $aaaa       $CD     3   rp2A03_cmp_absolute
+    CMP $aaaa,X     $DD     3   rp2A03_cmp_absolute_x
+    CMP $aaaa,Y     $D9     3   rp2A03_cmp_absolute_y
+    CMP ($aa,X)     $C1     2   rp2A03_cmp_indirect_x
+    CMP ($aa),Y     $D1     2   rp2A03_cmp_indirect_y
+
+    Flags:
+    Z: set if the accumulator is equal to the compared value;
+    C: set if the accumulator is greater than or equal to the compared value;
+    N: set to the value of bit 7 of the result of (accumulator - operand);
+*/
+void rp2A03_cmp_immediate(uint8_t operand);
+void rp2A03_cmp_zero_page(uint8_t addr);
+void rp2A03_cmp_zero_page_x(uint8_t addr);
+void rp2A03_cmp_absolute(uint16_t addr);
+void rp2A03_cmp_absolute_x(uint16_t addr);
+void rp2A03_cmp_absolute_y(uint16_t addr);
+void rp2A03_cmp_indirect_x(uint8_t addr);
+void rp2A03_cmp_indirect_y(uint8_t addr);
+
+
+/******************************* CPX *******************************
+    Compare X Register (flags: N, Z, C)
+    CPX #$aa        $E0     2   rp2A03_cpx_immediate
+    CPX $aa         $E4     2   rp2A03_cpx_zero_page
+    CPX $aaaa       $EC     3   rp2A03_cpx_absolute
+*/
+void rp2A03_cpx_immediate(uint8_t operand);
+void rp2A03_cpx_zero_page(uint8_t addr);
+void rp2A03_cpx_absolute(uint16_t addr);
+
+
+/******************************* CPY *******************************
+    Compare Y Register (flags: N, Z, C)
+    CPY #$aa        $C0     2   rp2A03_cpy_immediate
+    CPY $aa         $C4     2   rp2A03_cpy_zero_page
+    CPY $aaaa       $CC     3   rp2A03_cpy_absolute
+*/
+void rp2A03_cpy_immediate(uint8_t operand);
+void rp2A03_cpy_zero_page(uint8_t addr);
+void rp2A03_cpy_absolute(uint16_t addr);
+
+
+/******************************* BIT *******************************
+    Bit Test
+    BIT $aa         $24     2   rp2A03_bit_zero_page
+    BIT $aaaa       $2C     3   rp2A03_bit_absolute
+
+    Flags:
+    Z: set if the result of the AND operation is zero (no matching bits);
+    V: set to the value of bit 6 of the memory value;
+    N: set to the value of bit 7 of the memory value;
+*/
+void rp2A03_bit_zero_page(uint8_t addr);
+void rp2A03_bit_absolute(uint16_t addr);
+
+
 #endif /* RP2A03_INSTRUCTIONS_H */
