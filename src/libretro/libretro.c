@@ -5,6 +5,8 @@
 
 #include "libretro.h"
 #include "../cartridge.h"
+#include "../RP2A03.h"
+#include "../test/disassembler.h"
 
 #define VIDEO_WIDTH 256
 #define VIDEO_HEIGHT 240
@@ -140,6 +142,7 @@ void retro_run(void)
 bool retro_load_game(const struct retro_game_info *info)
 {
    cartridge_parse_header(info);
+   disassemble();
    return true;
 }
 

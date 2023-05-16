@@ -1,5 +1,5 @@
-#ifndef RP2A03_INSTRUCTIONS_H
-#define RP2A03_INSTRUCTIONS_H
+#ifndef RP2A03_H
+#define RP2A03_H
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -23,7 +23,6 @@
     $4020–$FFFF   $BFE0   Cartridge space: PRG ROM, PRG RAM, and mapper registers
 */
 
-/**************************** CONSTANTS ****************************/
 #define BIT_0 0b00000001
 #define BIT_1 0b00000010
 #define BIT_2 0b00000100
@@ -33,12 +32,23 @@
 #define BIT_6 0b01000000
 #define BIT_7 0b10000000
 
+#define RP2A03_RAM_ADDR_START       0x0000
+#define RP2A03_RAM_SIZE             0x0800 // 2 KB
+#define RP2A03_PPU_ADDR_START       0x2000
+#define RP2A03_PPU_SIZE             0x0008 // 8 bytes
+#define RP2A03_APU_ADDR_START       0x4000
+#define RP2A03_APU_SIZE             0x0018 // 24 bytes
+#define RP2A03_CARTRIDGE_ADDR_START 0x4020
+#define RP2A03_CARTRIDGE_SIZE       0xBFE0 // 49120 bytes
+#define RP2A03_MEM_SIZE             0xFFFF // 64 KB
+
 
 /**************************** CPU STATE ****************************/
-uint8_t mem[65536] = {0};
-uint8_t reg_a = 0;   // accumulator
-uint8_t reg_x = 0;
-uint8_t reg_y = 0;
+extern uint8_t mem[]; // 64 KB of memory
+extern uint8_t reg_a; // accumulator
+extern uint8_t reg_x;
+extern uint8_t reg_y;
+extern uint8_t flags;
 
 /*  7  bit  0
     ---- ----
@@ -52,7 +62,6 @@ uint8_t reg_y = 0;
     |+-------- Overflow
     +--------- Negative             keeps track if the result in the ALU is negative
 */
-uint8_t flags = 0;
 typedef enum RP2A03Flags {
     RP2A03_FLAG_CARRY     = 0b00000001, // C flag bitmask
     RP2A03_FLAG_ZERO      = 0b00000010, // Z flag bitmask
@@ -62,13 +71,18 @@ typedef enum RP2A03Flags {
 } RP2A03Flags;
 
 
-/*********************** AUXILIARY FUNCTIONS ***********************/
-void set_flag(RP2A03Flags flag, bool value);
-void set_flags(uint8_t result);
-uint8_t zero_page_x(uint8_t addr);
-uint8_t zero_page_y(uint8_t addr);
-uint16_t indirect_x(uint8_t addr);
-uint16_t indirect_y(uint8_t addr);
+/************************** LOOK UP TABLE **************************/
+
+typedef struct {
+    const char* mnemonic;
+    uint8_t numBytes;
+    uint8_t numCycles;
+    const char* addr_mode;
+} RP2A03Instruction;
+
+// lookup table (LUT) for the number of bytes and cycles each instruction takes
+// the index is the opcode
+extern RP2A03Instruction rp2A03_instruction_lut[];
 
 
 /******************************* LDA *******************************
@@ -451,4 +465,4 @@ void rp2A03_ror_absolute_x(uint16_t addr);
 
 
 
-#endif /* RP2A03_INSTRUCTIONS_H */
+#endif /* RP2A03_H */

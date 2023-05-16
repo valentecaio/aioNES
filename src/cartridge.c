@@ -2,34 +2,52 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "libretro/libretro.h"
 #include "cartridge.h"
+#include "libretro/libretro.h"
+#include "RP2A03.h"
 
 extern retro_log_printf_t log_cb;
 
+uint16_t pgr_rom_size, chr_rom_size;
+uint8_t expansion_device;
+bool mirroring;
+bool ppu_timing;
+
 void cartridge_parse_header(const struct retro_game_info *info)
 {
-   unsigned char buf[1+3*16], header[16], mirroring, ppu_timing;
+   uint8_t buf[1+3*16], *header;
+   uint8_t lsb, msb;
    bool is_nes2dot0 = false;
-   int pgr_rom_size, chr_rom_size, expansion_device;
-   FILE *ptr = fopen(info->path,"rb");
-   fread(header, sizeof(header), 1, ptr);
 
-   log_cb(RETRO_LOG_INFO, "Rom size: %lu\n", info->size);
+   FILE *ptr = fopen(info->path,"rb");
    log_cb(RETRO_LOG_INFO, "Rom path %s\n", info->path);
+
+   fread(&mem[RP2A03_CARTRIDGE_ADDR_START], RP2A03_CARTRIDGE_SIZE, 1, ptr);
+   header = &mem[RP2A03_CARTRIDGE_ADDR_START];
 
    for(int i=0; i<16; i++){
       sprintf(&buf[i*3], "%02x ", header[i]);
    }
    log_cb(RETRO_LOG_INFO, "header: %s\n", buf);
 
+   log_cb(RETRO_LOG_INFO, "header[4]: %o\n", header[4]);
+   log_cb(RETRO_LOG_INFO, "header[9]: %o\n", header[9]);
+
    // PGR ROM size in 16 KB units
-   pgr_rom_size = header[4]*16*1024;
-   log_cb(RETRO_LOG_INFO, "pgr_rom_size: %d\n", pgr_rom_size);
+   lsb = header[4];
+   msb = header[9] & 0x0F;
+   pgr_rom_size = ((msb << 8) | lsb) * 16 * 1024;
+   log_cb(RETRO_LOG_INFO, "pgr_rom_size LSB: 0x%02x (%d B)\n", lsb, lsb);
+   log_cb(RETRO_LOG_INFO, "pgr_rom_size MSB: 0x%02x (%d B)\n", msb, msb);
+   log_cb(RETRO_LOG_INFO, "pgr_rom_size: 0x%02x (%d B)\n", pgr_rom_size, pgr_rom_size);
 
    // CHR ROM size in 8 KB units
-   chr_rom_size = header[5]*8*1024;
-   log_cb(RETRO_LOG_INFO, "chr_rom_size: %d\n", chr_rom_size);
+   lsb = header[5];
+   msb = (header[9] & 0xF0) >> 4;
+   chr_rom_size = ((msb << 8) | lsb) * 8 * 1024;
+   log_cb(RETRO_LOG_INFO, "chr_rom_size_LSB: 0x%02x (%d B)\n", lsb, lsb);
+   log_cb(RETRO_LOG_INFO, "chr_rom_size_MSB: 0x%02x (%d B)\n", msb, msb);
+   log_cb(RETRO_LOG_INFO, "chr_rom_size: 0x%02x (%d B)\n", chr_rom_size, chr_rom_size);
 
    // 1 for vertical, 0 for horizontal
    mirroring = header[6] & 0b1;

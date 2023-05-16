@@ -1,3 +1,15 @@
+#ifndef CARTRIDGE_H
+#define CARTRIDGE_H
+
+#include <stdbool.h>
+#include <stdint.h>
+
+#include "libretro/libretro.h"
+
+extern uint16_t pgr_rom_size, chr_rom_size;
+extern uint8_t expansion_device; // 1 for Standard NES controllers
+extern bool mirroring;           // 1 for vertical, 0 for horizontal
+extern bool ppu_timing;          // 0 for NTSC, 1 for PAL
 
 /*
    https://www.nesdev.org/wiki/NES_2.0
@@ -111,3 +123,6 @@
     BY NOW, WE ONLY PARSE `NES 2.0` FORMAT
 */
 void cartridge_parse_header(const struct retro_game_info *info);
+
+
+#endif /* CARTRIDGE_H */
