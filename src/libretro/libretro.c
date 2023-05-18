@@ -5,7 +5,7 @@
 
 #include "libretro.h"
 #include "../cartridge.h"
-#include "../RP2A03.h"
+#include "../cpu.h"
 #include "../test/disassembler.h"
 
 #define VIDEO_WIDTH 256

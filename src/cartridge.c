@@ -4,7 +4,7 @@
 
 #include "cartridge.h"
 #include "libretro/libretro.h"
-#include "RP2A03.h"
+#include "cpu.h"
 
 extern retro_log_printf_t log_cb;
 
@@ -22,8 +22,8 @@ void cartridge_parse_header(const struct retro_game_info *info)
    FILE *ptr = fopen(info->path,"rb");
    log_cb(RETRO_LOG_INFO, "Rom path %s\n", info->path);
 
-   fread(&mem[RP2A03_CARTRIDGE_ADDR_START], RP2A03_CARTRIDGE_SIZE, 1, ptr);
-   header = &mem[RP2A03_CARTRIDGE_ADDR_START];
+   fread(&mem[CPU_CARTRIDGE_ADDR_START], CPU_CARTRIDGE_SIZE, 1, ptr);
+   header = &mem[CPU_CARTRIDGE_ADDR_START];
 
    for(int i=0; i<16; i++){
       sprintf(&buf[i*3], "%02x ", header[i]);

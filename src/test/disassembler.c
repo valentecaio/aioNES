@@ -5,17 +5,17 @@
 
 #include "disassembler.h"
 #include "../libretro/libretro.h"
-#include "../RP2A03.h"
+#include "../cpu.h"
 
 extern retro_log_printf_t log_cb;
 
 void disassemble() {
     log_cb(RETRO_LOG_INFO, "DISASSEMBLING PRG ROM:\n");
-    uint16_t base_addr = RP2A03_CARTRIDGE_ADDR_START + 16;
+    uint16_t base_addr = CPU_CARTRIDGE_ADDR_START + 16;
     uint8_t *prg_rom = &mem[base_addr];
     for(int i=0; i < pgr_rom_size; i++) {
         uint8_t opcode = prg_rom[i];
-        RP2A03Instruction inst = rp2A03_instruction_lut[opcode];
+        CPUInstruction inst = cpu_instruction_lut[opcode];
         char buf[128] = {" "};
 
         if (inst.numBytes == 0) {
