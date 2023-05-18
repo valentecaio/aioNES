@@ -19,7 +19,7 @@
     $2000–$2007   $0008   NES PPU registers
     $2008–$3FFF   $1FF8   Mirrors of $2000–$2007 (repeats every 8 bytes)
     $4000–$4017   $0018   NES APU and I/O registers
-    $4018–$401F   $0008   APU and I/O functionality that is normally disabled. See CPU Test Mode.
+    $4018–$401F   $0008   APU and I/O functionality that is normally disabled
     $4020–$FFFF   $BFE0   Cartridge space: PRG ROM, PRG RAM, and mapper registers
 */
 
@@ -54,18 +54,19 @@ extern uint8_t flags;
     ---- ----
     NVss DIZC
     |||| ||||
-    |||| |||+- Carry
-    |||| ||+-- Zero                 keeps track if the result of a calculation is zero
+    |||| |||+- Carry              set if the result of a calculation is greater than 255
+    |||| ||+-- Zero               set if the result of a calculation is zero
     |||| |+--- Interrupt Disable
-    |||| +---- Decimal              ignored in this implementation
-    ||++------ No CPU effect        ignored in this implementation
-    |+-------- Overflow
-    +--------- Negative             keeps track if the result in the ALU is negative
+    |||| +---- Decimal
+    ||++------ No CPU effect      ignored in this implementation
+    |+-------- Overflow           set if the result of a calculation is greater than 127 or less than -128
+    +--------- Negative           set if the result in the ALU is negative
 */
 typedef enum RP2A03Flags {
     RP2A03_FLAG_CARRY     = 0b00000001, // C flag bitmask
     RP2A03_FLAG_ZERO      = 0b00000010, // Z flag bitmask
     RP2A03_FLAG_INTERRUPT = 0b00000100, // I flag bitmask
+    RP2A03_FLAG_DECIMAL   = 0b00001000, // D flag bitmask
     RP2A03_FLAG_OVERFLOW  = 0b01000000, // V flag bitmask
     RP2A03_FLAG_NEGATIVE  = 0b10000000  // N flag bitmask
 } RP2A03Flags;
@@ -463,6 +464,24 @@ void rp2A03_ror_zero_page_x(uint8_t addr);
 void rp2A03_ror_absolute(uint16_t addr);
 void rp2A03_ror_absolute_x(uint16_t addr);
 
+
+/**************** CLC, CLD, CLI, CLV, SEC, SEC, SEI ****************
+    Status Flag Change Group
+    CLC     $18     1   rp2A03_clc      C = 0 -> Clear carry flag
+    CLD     $D8     1   rp2A03_cld      D = 0 -> Clear decimal mode
+    CLI     $58     1   rp2A03_cli      I = 0 -> Clear interrupt disable bit
+    CLV     $B8     1   rp2A03_clv      V = 0 -> Clear overflow flag
+    SEC     $38     1   rp2A03_sec      C = 1 -> Set carry flag
+    SED     $F8     1   rp2A03_sed      D = 1 -> Set decimal mode
+    SEI     $78     1   rp2A03_sei      I = 1 -> Set interrupt disable status
+*/
+void rp2A03_clc();
+void rp2A03_cld();
+void rp2A03_cli();
+void rp2A03_clv();
+void rp2A03_sec();
+void rp2A03_sed();
+void rp2A03_sei();
 
 
 #endif /* RP2A03_H */

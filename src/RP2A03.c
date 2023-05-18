@@ -477,3 +477,13 @@ void rp2A03_ror_absolute_x(uint16_t addr) { rp2A03_ror_absolute((addr + reg_x) &
 void rp2A03_ror_zero_page(uint8_t addr)   { rp2A03_ror_absolute(addr); }
 void rp2A03_ror_zero_page_x(uint8_t addr) { rp2A03_ror_absolute(zero_page_x(addr)); }
 
+
+/**************** CLC, CLD, CLI, CLV, SEC, SEC, SEI ****************/
+void rp2A03_clc() { set_flag(RP2A03_FLAG_CARRY,     false); }
+void rp2A03_cld() { set_flag(RP2A03_FLAG_DECIMAL,   false); }
+void rp2A03_cli() { set_flag(RP2A03_FLAG_INTERRUPT, false); }
+void rp2A03_clv() { set_flag(RP2A03_FLAG_OVERFLOW,  false); }
+void rp2A03_sec() { set_flag(RP2A03_FLAG_CARRY,     true); }
+void rp2A03_sed() { set_flag(RP2A03_FLAG_DECIMAL,   true); }
+void rp2A03_sei() { set_flag(RP2A03_FLAG_INTERRUPT, true); }
+
