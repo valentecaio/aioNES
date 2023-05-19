@@ -15,7 +15,7 @@ void disassemble() {
     uint8_t *prg_rom = &mem[base_addr];
     for(int i=0; i < pgr_rom_size; i++) {
         uint8_t opcode = prg_rom[i];
-        CPUInstruction inst = cpu_instruction_lut[opcode];
+        CPUInstruction inst = cpu_instruction_table[opcode];
         char buf[128] = {" "};
 
         if (inst.numBytes == 0) {

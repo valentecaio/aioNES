@@ -6,7 +6,7 @@
 
 /**************************** CONSTANTS ****************************/
 
-CPUInstruction cpu_instruction_lut[256] = {
+CPUInstruction cpu_instruction_table[256] = {
     [0x61] = {"ADC", 2, 6, "indirect, x indexed"},
     [0x65] = {"ADC", 2, 3, "zero page"},
     [0x69] = {"ADC", 2, 2, "immediate"},

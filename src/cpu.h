@@ -83,7 +83,7 @@ typedef struct {
 
 // lookup table (LUT) for the number of bytes and cycles each instruction takes
 // the index is the opcode
-extern CPUInstruction cpu_instruction_lut[];
+extern CPUInstruction cpu_instruction_table[];
 
 
 /******************************* LDA *******************************
