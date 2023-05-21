@@ -169,6 +169,11 @@ uint8_t reg_x = 0;
 uint8_t reg_y = 0;
 uint8_t flags = 0;
 
+// stack pointer is initialized to the last byte of the stack;
+// we only store the least significant byte of the stack pointer
+// because the most significant byte is always 0x01
+uint8_t reg_sp = CPU_STACK_SIZE - 1;
+
 
 /*********************** AUXILIARY FUNCTIONS ***********************/
 
@@ -179,7 +184,7 @@ void set_flag(CPUFlags flag, bool value) {
     }
 }
 
-// returns true if the given flag is set, false otherwise
+// return true if the given flag is set, false otherwise
 bool get_flag(CPUFlags flag) {
     return (flags & flag) != 0;
 }
@@ -189,11 +194,19 @@ void set_flags_n_z(uint8_t result) {
     set_flag(CPU_FLAG_NEGATIVE, result & BIT_7);
 }
 
-/*
-The 6502 has a "zero page wrap" mechanism. If the addition of the X register to
-the zero page index results in a value greater than 255 the processor performs
-a wraparound or modulo operation, discarding the higher bits that exceed 8 bits
-*/
+void stack_push(uint8_t value) {
+    mem[CPU_STACK_ADDR_START + reg_sp--] = value;
+    reg_sp--;
+}
+
+uint8_t stack_pull() {
+    reg_sp++;
+    return mem[CPU_STACK_ADDR_START + reg_sp];
+}
+
+// The 6502 has a "zero page wrap" mechanism. If the addition of the X register to
+// the zero page index results in a value greater than 255 the processor performs
+// a wraparound or modulo operation, discarding the higher bits that exceed 8 bits
 uint8_t zero_page_x(uint8_t addr) {
     return (addr + reg_x) & 0xFF;
 }
@@ -483,7 +496,16 @@ void cpu_clc() { set_flag(CPU_FLAG_CARRY,     false); }
 void cpu_cld() { set_flag(CPU_FLAG_DECIMAL,   false); }
 void cpu_cli() { set_flag(CPU_FLAG_INTERRUPT, false); }
 void cpu_clv() { set_flag(CPU_FLAG_OVERFLOW,  false); }
-void cpu_sec() { set_flag(CPU_FLAG_CARRY,     true); }
-void cpu_sed() { set_flag(CPU_FLAG_DECIMAL,   true); }
-void cpu_sei() { set_flag(CPU_FLAG_INTERRUPT, true); }
+void cpu_sec() { set_flag(CPU_FLAG_CARRY,      true); }
+void cpu_sed() { set_flag(CPU_FLAG_DECIMAL,    true); }
+void cpu_sei() { set_flag(CPU_FLAG_INTERRUPT,  true); }
+
+
+/******************* TSX, TXS, PHA, PHP, PLA, PLP ******************/
+void cpu_tsx() { set_flags_n_z(reg_x = reg_sp); }
+void cpu_txs() { reg_sp = reg_x; }
+void cpu_pha() { stack_push(reg_a); }
+void cpu_php() { stack_push(flags); }
+void cpu_pla() { set_flags_n_z(reg_a = stack_pull()); }
+void cpu_plp() { flags = stack_pull(); }
 

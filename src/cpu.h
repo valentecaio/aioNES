@@ -1,27 +1,28 @@
 #ifndef CPU_H
 #define CPU_H
 
+/*
+    This file implements the Ricoh 2A03 (CPU) processor assembly language instructions.
+
+    Address       Region            Size(B)  Purpose
+    -----------------------------------------------------------------
+    $0000-$00FF   Zero Page (RAM)   256      Fast-access memory for variables, counters, and pointers
+    $0100-$01FF   Stack (RAM)       256      Storage for return addresses, local variables, and data
+    $0200-$07FF   RAM               1536     General-purpose RAM
+    $0800–$0FFF   RAM mirror        2048     Mirrors of $0000–$07FF
+    $1000–$17FF   RAM mirror        2048     Mirrors of $0000–$07FF
+    $1800–$1FFF   RAM mirror        2048     Mirrors of $0000–$07FF
+    $2000-$2007   PPU Registers     8        Controls video and graphics processing
+    $2008–$3FFF   PPU mirror        8184     Mirrors of $2000–$2007 (repeats every 8 bytes)
+    $4000-$4017   I/O Registers     24       Handles input/output operations. Includes APU
+    $4020-$FFFF   Cartridge ROM     Varies   PRG ROM, PRG RAM, and mapper registers
+*/
+
 #include <stdbool.h>
 #include <stdint.h>
 
 #include "libretro/libretro.h"
 #include "cartridge.h"
-
-/*
-    This file implements the Ricoh 2A03 (CPU) processor assembly language instructions.
-
-    addr range    size    description
-    -----------------------------------------------------------------
-    $0000–$07FF   $0800   2 KB internal RAM
-    $0800–$0FFF   $0800   Mirrors of $0000–$07FF
-    $1000–$17FF   $0800   Mirrors of $0000–$07FF
-    $1800–$1FFF   $0800   Mirrors of $0000–$07FF
-    $2000–$2007   $0008   NES PPU registers
-    $2008–$3FFF   $1FF8   Mirrors of $2000–$2007 (repeats every 8 bytes)
-    $4000–$4017   $0018   NES APU and I/O registers
-    $4018–$401F   $0008   APU and I/O functionality that is normally disabled
-    $4020–$FFFF   $BFE0   Cartridge space: PRG ROM, PRG RAM, and mapper registers
-*/
 
 #define BIT_0 0b00000001
 #define BIT_1 0b00000010
@@ -32,43 +33,49 @@
 #define BIT_6 0b01000000
 #define BIT_7 0b10000000
 
-#define CPU_RAM_ADDR_START       0x0000
-#define CPU_RAM_SIZE             0x0800 // 2 KB
+#define CPU_ZERO_PAGE_ADDR_START 0x0000
+#define CPU_ZERO_PAGE_SIZE          256
+#define CPU_STACK_ADDR_START     0x0100
+#define CPU_STACK_SIZE              256
+#define CPU_RAM_ADDR_START       0x0200
+#define CPU_RAM_SIZE               1536
 #define CPU_PPU_ADDR_START       0x2000
-#define CPU_PPU_SIZE             0x0008 // 8 bytes
+#define CPU_PPU_SIZE                  8
 #define CPU_APU_ADDR_START       0x4000
-#define CPU_APU_SIZE             0x0018 // 24 bytes
+#define CPU_APU_SIZE                 24
 #define CPU_CARTRIDGE_ADDR_START 0x4020
-#define CPU_CARTRIDGE_SIZE       0xBFE0 // 49120 bytes
+#define CPU_CARTRIDGE_SIZE        49120
 #define CPU_MEM_SIZE             0xFFFF // 64 KB
 
 
 /**************************** CPU STATE ****************************/
-extern uint8_t mem[]; // 64 KB of memory
-extern uint8_t reg_a; // accumulator
-extern uint8_t reg_x;
-extern uint8_t reg_y;
-extern uint8_t flags;
+extern uint8_t mem[];       // 64 KB of memory
+extern uint8_t reg_a;       // accumulator register
+extern uint8_t reg_x;       // index register X
+extern uint8_t reg_y;       // index register Y
+extern uint8_t flags;       // each bit is a flag (see below)
+extern uint8_t reg_sp;      // stack pointer
 
 /*  7  bit  0
     ---- ----
     NVss DIZC
     |||| ||||
-    |||| |||+- Carry              set if the result of a calculation is greater than 255
-    |||| ||+-- Zero               set if the result of a calculation is zero
-    |||| |+--- Interrupt Disable
-    |||| +---- Decimal
-    ||++------ No CPU effect      ignored in this implementation
-    |+-------- Overflow           set if the result of a calculation is greater than 127 or less than -128
-    +--------- Negative           set if the result in the ALU is negative
+    |||| |||+- C Carry              set if the result of a calculation is greater than 255
+    |||| ||+-- Z Zero               set if the result of a calculation is zero
+    |||| |+--- I Interrupt Disable  set if the CPU is not to respond to interrupts
+    |||| +---- D Decimal            ignored
+    |||+------ B Break              ignored
+    ||+------- U Unused             ignored
+    |+-------- V Overflow           set if the result of a calculation is greater than 127 or less than -128
+    +--------- N Negative           set if the result in the ALU is negative
 */
 typedef enum CPUFlags {
-    CPU_FLAG_CARRY     = 0b00000001, // C flag bitmask
-    CPU_FLAG_ZERO      = 0b00000010, // Z flag bitmask
-    CPU_FLAG_INTERRUPT = 0b00000100, // I flag bitmask
-    CPU_FLAG_DECIMAL   = 0b00001000, // D flag bitmask
-    CPU_FLAG_OVERFLOW  = 0b01000000, // V flag bitmask
-    CPU_FLAG_NEGATIVE  = 0b10000000  // N flag bitmask
+    CPU_FLAG_CARRY     = 0b00000001, // C flag mask (Carry)
+    CPU_FLAG_ZERO      = 0b00000010, // Z flag mask (Zerp)
+    CPU_FLAG_INTERRUPT = 0b00000100, // I flag mask (Interrupt Disable)
+    CPU_FLAG_DECIMAL   = 0b00001000, // D flag mask (Decimal)
+    CPU_FLAG_OVERFLOW  = 0b01000000, // V flag mask (Overflow)
+    CPU_FLAG_NEGATIVE  = 0b10000000  // N flag mask (Negative)
 } CPUFlags;
 
 
@@ -482,6 +489,23 @@ void cpu_clv();
 void cpu_sec();
 void cpu_sed();
 void cpu_sei();
+
+
+/******************* TSX, TXS, PHA, PHP, PLA, PLP ******************
+    Stack Group                     flags
+    TSX     $BA     1   cpu_tsx      N,Z    X = S    Transfer stack pointer to x register
+    TXS     $9A     1   cpu_txs      -      S = X    Transfer x register to stack pointer
+    PHA     $48     1   cpu_pha      -      A -> S   Push accumulator on stack
+    PHP     $08     1   cpu_php      -      P -> S   Push processor status on stack
+    PLA     $68     1   cpu_pla      N,Z    A <- S   Pull accumulator from stack
+    PLP     $28     1   cpu_plp      all    P <- S   Pull processor status from stack
+ */
+void cpu_tsx();
+void cpu_txs();
+void cpu_pha();
+void cpu_php();
+void cpu_pla();
+void cpu_plp();
 
 
 #endif /* CPU_H */
